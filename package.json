@@ -1,0 +1,21 @@
+{
+  "name": "schorder",
+  "private": true,
+  "version": "0.1.0",
+  "description": "校园外卖点餐系统（React + FastAPI + SQLite）",
+  "workspaces": [
+    "apps/web",
+    "packages/contract"
+  ],
+  "scripts": {
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev.ps1",
+    "dev:web": "npm --workspace @schorder/web run dev",
+    "build": "npm --workspace @schorder/web run build",
+    "typecheck": "npm --workspace @schorder/web run typecheck",
+    "gen:contract": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/gen-contract.ps1",
+    "verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.0"
+  }
+}

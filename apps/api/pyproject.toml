@@ -1,0 +1,34 @@
+# 本文件只承载工具配置（ruff / mypy / pytest / coverage）。
+# 依赖清单在 requirements.txt 与 requirements-dev.txt，避免两处声明漂移。
+# 刻意不声明 [project]/[build-system]：本项目不打包分发，`pip install -e .` 会被拒绝。
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM", "RUF", "S"]
+# RUF001-003 是中英文标点歧义检查，本项目注释/文案为中文，关掉
+ignore = ["S101", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+exclude = "alembic/versions"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+# 本机沙箱不允许写系统临时目录，测试临时文件统一放仓库内
+addopts = "-q --basetemp=.pytest-tmp"
+filterwarnings = ["error::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["src/schorder"]
+branch = true

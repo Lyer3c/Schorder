@@ -1,0 +1,34 @@
+# 依赖与构建产物
+node_modules/
+dist/
+.npm-cache/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pytest-tmp/
+*.egg-info/
+pip-*/
+.deps/
+
+# 本地数据与临时文件
+apps/api/data/*
+!apps/api/data/.gitkeep
+.tmp/
+*.log
+
+# 沙箱探测残留
+probe/
+
+# 环境与密钥
+.env
+.env.local
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
