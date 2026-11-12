@@ -2,7 +2,7 @@
 
 学生 / 商家 / 管理三端的校园点餐系统。前端 React + TypeScript，后端 FastAPI + SQLAlchemy + SQLite。
 
-> 当前进度：**M0 已完成**（骨架、契约管线、迁移、健康检查）。
+> 当前进度：**M1 已完成**（数据表、种子数据、目录接口、档口浏览页）。
 > 设计与决策见 [`docs/architecture.md`](docs/architecture.md)、[`docs/security.md`](docs/security.md)、[`docs/api-contract.md`](docs/api-contract.md)。
 
 ---
@@ -78,8 +78,8 @@ apps/
     src/schorder/
       api/                 路由、中间件、错误出口、依赖
       db/                  引擎、会话、Alembic 辅助
-      domain/              领域异常（M1 起加定价与状态机）
-      infra/               日志等基础设施
+      domain/              领域异常、枚举、营业时间（M2 起加定价与状态机）
+      infra/               日志、ID、时钟、密码哈希
       schemas/             Pydantic 出入参
       config.py            配置（env + 校验）
       main.py              create_app()
