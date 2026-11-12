@@ -29,7 +29,10 @@ python -m venv .venv
 # 2) 建库（执行迁移）
 .\.venv\Scripts\python.exe -m alembic upgrade head
 
-# 3) 前端依赖
+# 3) 灌演示数据（可重复执行）
+.\.venv\Scripts\python.exe scripts\seed.py
+
+# 4) 前端依赖
 cd ..\..
 npm install --ignore-scripts
 ```
@@ -101,7 +104,9 @@ Pydantic 模型 → FastAPI → openapi.json → openapi-typescript → types.ts
 - `types.ts` 与 `openapi.json` 都入库，PR 里能直接看到接口变化。
 - 前端禁止手写接口类型；`npm run verify` 会重生成并检查漂移。
 
-## 6. 已实现（M0）
+## 6. 已实现（M0 + M1）
+
+**M0 骨架**
 
 - [x] `create_app()` 工厂 + 依赖注入，`app.state` 持有 engine/sessionmaker/settings
 - [x] 配置走环境变量，缺失或类型错误启动即失败
@@ -109,15 +114,66 @@ Pydantic 模型 → FastAPI → openapi.json → openapi-typescript → types.ts
 - [x] 请求标识（`X-Request-Id` 透传/生成）、64KB 体积上限、安全响应头（CSP/HSTS 等）
 - [x] `/healthz` 与 `/readyz`（后者比对 Alembic 版本，未迁移返回 503）
 - [x] Alembic 基线迁移，SQLite WAL + 外键 + busy_timeout
-- [x] React 路由壳（点餐 / 商家 / 管理）+ Tailwind v4 设计令牌
+- [x] React 路由壳 + Tailwind v4 设计令牌
 - [x] 契约生成链路（`/api/v1/meta` 作为端到端样例）
-- [x] 9 条后端测试、ruff、mypy strict 全绿
+
+**M1 目录**
+
+- [x] 17 张业务表 + 迁移 `0002`（统一约束命名、CHECK 约束、部分唯一索引）
+- [x] 可重复执行的种子数据：5 分类 / 6 档口 / 18 菜品 / 29 规格
+- [x] 只读接口：`GET /categories`、`GET /stalls`（筛选 / 排序 / 游标分页）、`GET /stalls/{id}`、`GET /search`
+- [x] 前端：首页分类与推荐、档口列表（URL 同步筛选）、档口详情（菜单分组 / 售罄 / 规格组）
+- [x] 26 条后端测试、ruff、mypy strict 全绿
 
 ## 7. 本机环境的两个特殊说明
 
 1. **`apps/api/pip.ini`**：指向清华源，并关闭 HTTP 缓存。直连 PyPI 索引在本机会卡死；缓存目录在用户目录下不可写，开启缓存会让 pip 卡在写盘重试。
 2. **`.pyshim/sitecustomize.py`**：本机沙箱不允许访问 `0700` 权限的目录，而 `tempfile.mkdtemp`、pytest 的临时目录都用 0700。该垫片把 0700 放宽为 0777。**生产环境不要带上这个目录**，`dev.ps1` / `verify.ps1` 只通过 `PYTHONPATH` 引用它。
 
-## 8. 下一步（M1）
+## 8. 下一步（M2）
 
-建表（18 张）+ 种子数据 + 浏览链路（首页 / 档口列表 / 详情 / 搜索），同时落地 `features/catalog` 的前端页面。
+购物车、结算、下单（服务端重算价格 / 条件扣库存 / 幂等键）、模拟支付，以及登录与会话
+（`users`、`sessions` 两张表已经建好，M2 接上鉴权与 CSRF）。
+
+## 9. 提交规范（Conventional Commits）
+
+格式：
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+| type | 用于 |
+| --- | --- |
+| `feat` | 新增用户可见的能力 |
+| `fix` | 修复缺陷 |
+| `docs` | 只改文档 |
+| `style` | 只改格式（空格、分号），不影响逻辑 |
+| `refactor` | 重构，既不新增功能也不修 bug |
+| `perf` | 性能优化 |
+| `test` | 增删改测试 |
+| `build` | 依赖、构建脚本、打包配置 |
+| `ci` | CI 配置与脚本 |
+| `chore` | 杂务（脚手架、版本号、注释），不影响 src 与测试 |
+| `revert` | 回滚某次提交 |
+
+约定：
+
+- `scope` 取模块或层：`api` `web` `contract` `docs` `deps` `tooling` `git`，跨模块可省略。
+- `subject` 用祈使句描述结果（"增加"而不是"增加了"），不加句号，≤ 50 个字符。
+- `body` 说明**为什么**改，不写"怎么改"（diff 已经说明）。
+- 破坏性变更要在 type 后加 `!`，并在 footer 写 `BREAKING CHANGE: 说明`。
+- 关联 issue 用 footer：`Closes #12`。
+
+校验钩子已随仓库提供：
+
+```powershell
+git config core.hooksPath Schorder/.githooks   # 当前仓库根在 D:\Try_1
+# 仓库迁到 Schorder/ 之后改为：git config core.hooksPath .githooks
+```
+
+不符合格式的提交会被拒绝；确有需要时用 `git commit --no-verify` 绕过。

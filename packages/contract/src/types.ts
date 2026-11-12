@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v1/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 档口分类 */
+        get: operations["list_categories_api_v1_categories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta": {
         parameters: {
             query?: never;
@@ -21,10 +38,153 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 搜索档口与菜品 */
+        get: operations["search_api_v1_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stalls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 档口列表 */
+        get: operations["list_stalls_api_v1_stalls_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stalls/{stall_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 档口详情 */
+        get: operations["get_stall_api_v1_stalls__stall_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** BusinessHourOut */
+        BusinessHourOut: {
+            /** Closetime */
+            closeTime: string;
+            /** Opentime */
+            openTime: string;
+            /** Weekday */
+            weekday: number;
+        };
+        /** CategoryListOut */
+        CategoryListOut: {
+            /** Data */
+            data: components["schemas"]["CategoryOut"][];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** CategoryOut */
+        CategoryOut: {
+            /** Iconurl */
+            iconUrl?: string | null;
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Sortorder */
+            sortOrder: number;
+        };
+        /** DishOptionGroupOut */
+        DishOptionGroupOut: {
+            /** Id */
+            id: string;
+            /** Maxselect */
+            maxSelect: number;
+            /** Minselect */
+            minSelect: number;
+            /** Name */
+            name: string;
+            /** Options */
+            options: components["schemas"]["DishOptionOut"][];
+            /** Required */
+            required: boolean;
+        };
+        /** DishOptionOut */
+        DishOptionOut: {
+            /** Id */
+            id: string;
+            /** Isavailable */
+            isAvailable: boolean;
+            /** Name */
+            name: string;
+            /** Pricedeltacents */
+            priceDeltaCents: number;
+        };
+        /** DishOut */
+        DishOut: {
+            /** Description */
+            description?: string | null;
+            /** Id */
+            id: string;
+            /** Imageurl */
+            imageUrl?: string | null;
+            /** Name */
+            name: string;
+            /** Optiongroups */
+            optionGroups: components["schemas"]["DishOptionGroupOut"][];
+            /** Pricecents */
+            priceCents: number;
+            /** Soldcount */
+            soldCount: number;
+            /** Status */
+            status: string;
+            /** Stock */
+            stock: number;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
+        /** MenuGroupOut */
+        MenuGroupOut: {
+            /** Dishes */
+            dishes: components["schemas"]["DishOut"][];
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+        };
         /** MetaEnvelope */
         MetaEnvelope: {
             data: components["schemas"]["MetaOut"];
@@ -49,6 +209,137 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** PageMeta */
+        PageMeta: {
+            /** Nextcursor */
+            nextCursor?: string | null;
+            /** Total */
+            total?: number | null;
+        };
+        /** SearchEnvelope */
+        SearchEnvelope: {
+            data: components["schemas"]["SearchResultOut"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** SearchResultOut */
+        SearchResultOut: {
+            /** Dishes */
+            dishes: components["schemas"]["DishOut"][];
+            /** Stalls */
+            stalls: components["schemas"]["StallSummaryOut"][];
+        };
+        /** StallDetailEnvelope */
+        StallDetailEnvelope: {
+            data: components["schemas"]["StallDetailOut"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** StallDetailOut */
+        StallDetailOut: {
+            /** Businesshours */
+            businessHours: components["schemas"]["BusinessHourOut"][];
+            /** Categoryid */
+            categoryId: string;
+            /** Categoryname */
+            categoryName: string;
+            /** Deliveryfeecents */
+            deliveryFeeCents: number;
+            /** Description */
+            description?: string | null;
+            /** Estimatedminutes */
+            estimatedMinutes: number;
+            /** Id */
+            id: string;
+            /** Isopen */
+            isOpen: boolean;
+            /** Logourl */
+            logoUrl?: string | null;
+            /** Menugroups */
+            menuGroups: components["schemas"]["MenuGroupOut"][];
+            /** Minordercents */
+            minOrderCents: number;
+            /** Monthlysales */
+            monthlySales: number;
+            /** Name */
+            name: string;
+            /** Notice */
+            notice?: string | null;
+            /** Opensat */
+            opensAt?: string | null;
+            /** Packingfeecents */
+            packingFeeCents: number;
+            /** Rating */
+            rating: number;
+            /** Ratingcount */
+            ratingCount: number;
+        };
+        /** StallListOut */
+        StallListOut: {
+            /** Data */
+            data: components["schemas"]["StallSummaryOut"][];
+            meta: components["schemas"]["PageMeta"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** StallSummaryOut */
+        StallSummaryOut: {
+            /** Categoryid */
+            categoryId: string;
+            /** Categoryname */
+            categoryName: string;
+            /** Deliveryfeecents */
+            deliveryFeeCents: number;
+            /** Description */
+            description?: string | null;
+            /** Estimatedminutes */
+            estimatedMinutes: number;
+            /** Id */
+            id: string;
+            /** Isopen */
+            isOpen: boolean;
+            /** Logourl */
+            logoUrl?: string | null;
+            /** Minordercents */
+            minOrderCents: number;
+            /** Monthlysales */
+            monthlySales: number;
+            /** Name */
+            name: string;
+            /** Opensat */
+            opensAt?: string | null;
+            /** Packingfeecents */
+            packingFeeCents: number;
+            /** Rating */
+            rating: number;
+            /** Ratingcount */
+            ratingCount: number;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -58,6 +349,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    list_categories_api_v1_categories_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryListOut"];
+                };
+            };
+        };
+    };
     read_meta_api_v1_meta_get: {
         parameters: {
             query?: never;
@@ -74,6 +385,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MetaEnvelope"];
+                };
+            };
+        };
+    };
+    search_api_v1_search_get: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_stalls_api_v1_stalls_get: {
+        parameters: {
+            query?: {
+                categoryId?: string | null;
+                keyword?: string | null;
+                sort?: "recommended" | "sales" | "rating" | "min_order";
+                openNow?: boolean;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StallListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_stall_api_v1_stalls__stall_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stall_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StallDetailEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

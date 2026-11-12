@@ -1,6 +1,268 @@
 {
   "components": {
     "schemas": {
+      "BusinessHourOut": {
+        "additionalProperties": false,
+        "properties": {
+          "closeTime": {
+            "title": "Closetime",
+            "type": "string"
+          },
+          "openTime": {
+            "title": "Opentime",
+            "type": "string"
+          },
+          "weekday": {
+            "title": "Weekday",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "weekday",
+          "openTime",
+          "closeTime"
+        ],
+        "title": "BusinessHourOut",
+        "type": "object"
+      },
+      "CategoryListOut": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryOut"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "ok": {
+            "const": true,
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "CategoryListOut",
+        "type": "object"
+      },
+      "CategoryOut": {
+        "additionalProperties": false,
+        "properties": {
+          "iconUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iconurl"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "sortOrder": {
+            "title": "Sortorder",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "sortOrder"
+        ],
+        "title": "CategoryOut",
+        "type": "object"
+      },
+      "DishOptionGroupOut": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "maxSelect": {
+            "title": "Maxselect",
+            "type": "integer"
+          },
+          "minSelect": {
+            "title": "Minselect",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/DishOptionOut"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "required",
+          "minSelect",
+          "maxSelect",
+          "options"
+        ],
+        "title": "DishOptionGroupOut",
+        "type": "object"
+      },
+      "DishOptionOut": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "isAvailable": {
+            "title": "Isavailable",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "priceDeltaCents": {
+            "title": "Pricedeltacents",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "priceDeltaCents",
+          "isAvailable"
+        ],
+        "title": "DishOptionOut",
+        "type": "object"
+      },
+      "DishOut": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "imageUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imageurl"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "optionGroups": {
+            "items": {
+              "$ref": "#/components/schemas/DishOptionGroupOut"
+            },
+            "title": "Optiongroups",
+            "type": "array"
+          },
+          "priceCents": {
+            "title": "Pricecents",
+            "type": "integer"
+          },
+          "soldCount": {
+            "title": "Soldcount",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "stock": {
+            "title": "Stock",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "priceCents",
+          "stock",
+          "soldCount",
+          "status",
+          "optionGroups"
+        ],
+        "title": "DishOut",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "MenuGroupOut": {
+        "additionalProperties": false,
+        "properties": {
+          "dishes": {
+            "items": {
+              "$ref": "#/components/schemas/DishOut"
+            },
+            "title": "Dishes",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "dishes"
+        ],
+        "title": "MenuGroupOut",
+        "type": "object"
+      },
       "MetaEnvelope": {
         "additionalProperties": false,
         "properties": {
@@ -49,6 +311,396 @@
         ],
         "title": "MetaOut",
         "type": "object"
+      },
+      "PageMeta": {
+        "additionalProperties": false,
+        "properties": {
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextcursor"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          }
+        },
+        "title": "PageMeta",
+        "type": "object"
+      },
+      "SearchEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SearchResultOut"
+          },
+          "ok": {
+            "const": true,
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "SearchEnvelope",
+        "type": "object"
+      },
+      "SearchResultOut": {
+        "additionalProperties": false,
+        "properties": {
+          "dishes": {
+            "items": {
+              "$ref": "#/components/schemas/DishOut"
+            },
+            "title": "Dishes",
+            "type": "array"
+          },
+          "stalls": {
+            "items": {
+              "$ref": "#/components/schemas/StallSummaryOut"
+            },
+            "title": "Stalls",
+            "type": "array"
+          }
+        },
+        "required": [
+          "stalls",
+          "dishes"
+        ],
+        "title": "SearchResultOut",
+        "type": "object"
+      },
+      "StallDetailEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/StallDetailOut"
+          },
+          "ok": {
+            "const": true,
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "StallDetailEnvelope",
+        "type": "object"
+      },
+      "StallDetailOut": {
+        "additionalProperties": false,
+        "properties": {
+          "businessHours": {
+            "items": {
+              "$ref": "#/components/schemas/BusinessHourOut"
+            },
+            "title": "Businesshours",
+            "type": "array"
+          },
+          "categoryId": {
+            "title": "Categoryid",
+            "type": "string"
+          },
+          "categoryName": {
+            "title": "Categoryname",
+            "type": "string"
+          },
+          "deliveryFeeCents": {
+            "title": "Deliveryfeecents",
+            "type": "integer"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "estimatedMinutes": {
+            "title": "Estimatedminutes",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "isOpen": {
+            "title": "Isopen",
+            "type": "boolean"
+          },
+          "logoUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logourl"
+          },
+          "menuGroups": {
+            "items": {
+              "$ref": "#/components/schemas/MenuGroupOut"
+            },
+            "title": "Menugroups",
+            "type": "array"
+          },
+          "minOrderCents": {
+            "title": "Minordercents",
+            "type": "integer"
+          },
+          "monthlySales": {
+            "title": "Monthlysales",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "notice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notice"
+          },
+          "opensAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opensat"
+          },
+          "packingFeeCents": {
+            "title": "Packingfeecents",
+            "type": "integer"
+          },
+          "rating": {
+            "title": "Rating",
+            "type": "number"
+          },
+          "ratingCount": {
+            "title": "Ratingcount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryId",
+          "categoryName",
+          "rating",
+          "ratingCount",
+          "monthlySales",
+          "minOrderCents",
+          "packingFeeCents",
+          "deliveryFeeCents",
+          "isOpen",
+          "estimatedMinutes",
+          "businessHours",
+          "menuGroups"
+        ],
+        "title": "StallDetailOut",
+        "type": "object"
+      },
+      "StallListOut": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/StallSummaryOut"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMeta"
+          },
+          "ok": {
+            "const": true,
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "title": "StallListOut",
+        "type": "object"
+      },
+      "StallSummaryOut": {
+        "additionalProperties": false,
+        "properties": {
+          "categoryId": {
+            "title": "Categoryid",
+            "type": "string"
+          },
+          "categoryName": {
+            "title": "Categoryname",
+            "type": "string"
+          },
+          "deliveryFeeCents": {
+            "title": "Deliveryfeecents",
+            "type": "integer"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "estimatedMinutes": {
+            "title": "Estimatedminutes",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "isOpen": {
+            "title": "Isopen",
+            "type": "boolean"
+          },
+          "logoUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logourl"
+          },
+          "minOrderCents": {
+            "title": "Minordercents",
+            "type": "integer"
+          },
+          "monthlySales": {
+            "title": "Monthlysales",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "opensAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opensat"
+          },
+          "packingFeeCents": {
+            "title": "Packingfeecents",
+            "type": "integer"
+          },
+          "rating": {
+            "title": "Rating",
+            "type": "number"
+          },
+          "ratingCount": {
+            "title": "Ratingcount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryId",
+          "categoryName",
+          "rating",
+          "ratingCount",
+          "monthlySales",
+          "minOrderCents",
+          "packingFeeCents",
+          "deliveryFeeCents",
+          "isOpen",
+          "estimatedMinutes"
+        ],
+        "title": "StallSummaryOut",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
       }
     }
   },
@@ -58,6 +710,27 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/categories": {
+      "get": {
+        "operationId": "list_categories_api_v1_categories_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryListOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "档口分类",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
     "/api/v1/meta": {
       "get": {
         "operationId": "read_meta_api_v1_meta_get",
@@ -76,6 +749,226 @@
         "summary": "服务元信息",
         "tags": [
           "meta"
+        ]
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "operationId": "search_api_v1_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 30,
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 20,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "搜索档口与菜品",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/stalls": {
+      "get": {
+        "operationId": "list_stalls_api_v1_stalls_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "categoryId",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 36,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Categoryid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "keyword",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 50,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Keyword"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "recommended",
+              "enum": [
+                "recommended",
+                "sales",
+                "rating",
+                "min_order"
+              ],
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "openNow",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Opennow",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StallListOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "档口列表",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/stalls/{stall_id}": {
+      "get": {
+        "operationId": "get_stall_api_v1_stalls__stall_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stall_id",
+            "required": true,
+            "schema": {
+              "title": "Stall Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StallDetailEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "档口详情",
+        "tags": [
+          "catalog"
         ]
       }
     }

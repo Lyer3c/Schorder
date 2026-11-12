@@ -4,7 +4,7 @@
  * 约束（与后端契约一致）：
  * - 始终带 Cookie（credentials: 'include'）
  * - 非 GET 请求由调用方传 csrfToken，注入 X-CSRF-Token
- * - 后端统一返回 { ok, data } / { ok, error }，这里只把 error 转成 ApiError
+ * - 后端统一返回 { ok, data, meta? } / { ok, error }，这里把 error 转成 ApiError
  */
 
 export interface ApiErrorPayload {
@@ -28,9 +28,10 @@ export class ApiError extends Error {
   }
 }
 
-interface Envelope<T> {
+export interface Envelope<T> {
   ok: boolean
   data?: T
+  meta?: unknown
   error?: ApiErrorPayload
 }
 
@@ -39,7 +40,13 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   csrfToken?: string | null
 }
 
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+export interface MetaResult<T, M> {
+  data: T
+  meta: M
+}
+
+/** 发请求并返回完整信封（需要读 meta 时用，比如分页游标）。 */
+export async function apiEnvelope<T>(path: string, options: RequestOptions = {}): Promise<Envelope<T>> {
   const { body, csrfToken, headers, ...rest } = options
 
   const requestHeaders = new Headers(headers)
@@ -78,13 +85,45 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     )
   }
 
-  if (payload === null || payload.data === undefined) {
-    throw new ApiError(response.status, {
-      code: 'EMPTY_RESPONSE',
-      message: '响应体为空',
-      traceId: response.headers.get('X-Request-Id'),
-    })
+  return payload ?? { ok: true }
+}
+
+/** 最常见用法：只要 data。 */
+export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const envelope = await apiEnvelope<T>(path, options)
+  if (envelope.data === undefined) {
+    throw new ApiError(200, { code: 'EMPTY_RESPONSE', message: '响应体为空' })
   }
 
-  return payload.data
+  // 开发期护栏：泛型误传成 *Envelope 类型时，调用方会多拆一层导致 undefined。
+  // 这类错误类型系统看不出来（泛型不做校验），所以这里主动拦一次。
+  if (import.meta.env.DEV && looksLikeEnvelope(envelope.data)) {
+    throw new Error(
+      `apiRequest 已经拆过一层信封了：${path} 的泛型应填 data 的类型（如 MetaOut），而不是 MetaEnvelope`,
+    )
+  }
+
+  return envelope.data
+}
+
+function looksLikeEnvelope(value: unknown): boolean {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'ok' in value &&
+    'data' in value &&
+    !('id' in value)
+  )
+}
+
+/** 需要 data + meta 的用法（分页）。 */
+export async function apiRequestWithMeta<T, M>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<MetaResult<T, M>> {
+  const envelope = await apiEnvelope<T>(path, options)
+  if (envelope.data === undefined) {
+    throw new ApiError(200, { code: 'EMPTY_RESPONSE', message: '响应体为空' })
+  }
+  return { data: envelope.data, meta: envelope.meta as M }
 }

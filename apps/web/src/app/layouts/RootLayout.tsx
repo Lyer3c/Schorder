@@ -1,7 +1,8 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
 const navItems = [
-  { to: '/', label: '点餐', end: true },
+  { to: '/', label: '首页', end: true },
+  { to: '/stalls', label: '档口', end: false },
   { to: '/merchant', label: '商家', end: false },
   { to: '/admin', label: '管理', end: false },
 ]

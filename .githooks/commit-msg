@@ -1,0 +1,33 @@
+#!/bin/sh
+# 校验提交信息是否符合 Conventional Commits。
+# 安装：git config core.hooksPath .githooks
+# 绕过：git commit --no-verify
+
+msg_file="$1"
+subject=$(head -n 1 "$msg_file")
+
+# 允许 git 自动生成的消息
+case "$subject" in
+    "Merge "*|"Revert "*|"fixup! "*|"squash! "*) exit 0 ;;
+esac
+
+pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: .+'
+
+if ! printf '%s' "$subject" | grep -Eq "$pattern"; then
+    cat >&2 <<EOF
+提交信息不符合 Conventional Commits。
+
+  实际：$subject
+  期望：<type>(<scope>): <subject>
+
+  type  : feat fix docs style refactor perf test build ci chore revert
+  scope : api web contract docs deps tooling git（可省略）
+  示例  : feat(api): 增加下单接口
+          fix(web): 修复购物车金额计算
+
+详见 README「提交规范」。
+EOF
+    exit 1
+fi
+
+exit 0
