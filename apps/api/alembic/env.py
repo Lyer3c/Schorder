@@ -18,6 +18,7 @@ from sqlalchemy import engine_from_config, pool
 API_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(API_DIR / "src"))
 
+import schorder.db.models  # noqa: E402,F401  - 必须导入，否则 autogenerate 看不到表
 from schorder.config import Settings  # noqa: E402
 from schorder.db.base import Base  # noqa: E402
 from schorder.db.engine import ensure_sqlite_parent_dir  # noqa: E402

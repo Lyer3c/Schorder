@@ -10,7 +10,7 @@ from fastapi import FastAPI
 
 from schorder.api.errors import register_exception_handlers
 from schorder.api.middleware import RequestContextMiddleware, SecurityHeadersMiddleware
-from schorder.api.routers import health, meta
+from schorder.api.routers import catalog, health, meta
 from schorder.config import Settings, get_settings
 from schorder.db.engine import create_db_engine
 from schorder.db.session import create_session_factory
@@ -44,6 +44,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(meta.router, prefix="/api/v1")
+    app.include_router(catalog.router, prefix="/api/v1")
 
     return app
 

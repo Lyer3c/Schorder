@@ -42,3 +42,27 @@ def migrated_client(tmp_path: Path) -> Iterator[TestClient]:
 
     with TestClient(create_app(Settings(env="test", database_url=url))) as test_client:
         yield test_client
+
+
+@pytest.fixture()
+def seeded_client(tmp_path: Path) -> Iterator[TestClient]:
+    """迁移 + 演示种子数据。目录相关测试都跑在这个库上。"""
+    from schorder.db.engine import create_db_engine
+    from schorder.db.session import create_session_factory
+    from schorder.dev.seed import seed_all
+
+    url = f"sqlite:///{(tmp_path / 'seeded.db').as_posix()}"
+    config = Config(str(API_DIR / "alembic.ini"))
+    config.set_main_option("script_location", str(ALEMBIC_DIR))
+    config.set_main_option("sqlalchemy.url", url)
+    command.upgrade(config, "head")
+
+    engine = create_db_engine(url)
+    factory = create_session_factory(engine)
+    with factory() as session:
+        seed_all(session)
+        session.commit()
+    engine.dispose()
+
+    with TestClient(create_app(Settings(env="test", database_url=url))) as test_client:
+        yield test_client
