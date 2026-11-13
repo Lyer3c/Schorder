@@ -30,6 +30,12 @@ class Unauthenticated(DomainError):
     http_status = 401
 
 
+class InvalidCredentials(Unauthenticated):
+    """登录失败统一用它，不区分"账号不存在"和"密码错误"。"""
+
+    code = "AUTH_INVALID_CREDENTIALS"
+
+
 class Forbidden(DomainError):
     code = "FORBIDDEN"
     http_status = 403

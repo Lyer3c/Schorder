@@ -91,3 +91,37 @@ def _content_length(request: Request) -> int | None:
         return int(raw)
     except ValueError:
         return None
+
+
+UNSAFE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
+
+
+class OriginCheckMiddleware(BaseHTTPMiddleware):
+    """写请求的来源校验（CSRF 的第一道闸）。
+
+    浏览器发跨站 POST 时一定会带 Origin，且 JS 无法伪造。
+    没有 Origin 的请求（curl、服务端调用）放行——真正的 CSRF 令牌校验在路由依赖里。
+    这里刻意不查数据库，所以放在最外层也几乎不增加开销。
+    """
+
+    def __init__(self, app: object, *, trusted_origins: list[str]) -> None:
+        super().__init__(app)  # type: ignore[arg-type]
+        self.trusted_origins = frozenset(trusted_origins)
+
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        if request.method in UNSAFE_METHODS:
+            origin = request.headers.get("origin")
+            if origin is not None and origin not in self.trusted_origins:
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "ok": False,
+                        "error": {
+                            "code": "CSRF_TOKEN_INVALID",
+                            "message": "请求来源不被允许",
+                            "details": {},
+                            "traceId": getattr(request.state, "request_id", None),
+                        },
+                    },
+                )
+        return await call_next(request)

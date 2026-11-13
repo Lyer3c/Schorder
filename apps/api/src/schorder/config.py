@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 API_DIR = Path(__file__).resolve().parents[2]
@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     session_idle_minutes: int = 30
     session_absolute_hours: int = 12
 
+    # 用于给 IP / UA 做 HMAC 指纹。生产必须换掉（下面的 validator 会拦）。
+    security_pepper: str = "dev-only-pepper"
+
     max_body_bytes: int = 64 * 1024
     static_dir: Path | None = None
 
@@ -48,6 +51,12 @@ class Settings(BaseSettings):
         if isinstance(value, str):
             return [item.strip() for item in value.split(",") if item.strip()]
         return value
+
+    @model_validator(mode="after")
+    def _reject_dev_secrets_in_prod(self) -> Settings:
+        if self.env == "prod" and self.security_pepper == "dev-only-pepper":
+            raise ValueError("生产环境必须设置 SCHORDER_SECURITY_PEPPER")
+        return self
 
     @property
     def is_prod(self) -> bool:

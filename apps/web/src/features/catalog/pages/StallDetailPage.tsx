@@ -1,10 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import { fetchStallDetail, type Dish, type DishOptionGroup } from '@/features/catalog/api'
+import {
+  fetchStallDetail,
+  type Dish,
+  type DishOption,
+  type DishOptionGroup,
+  type StallDetail,
+} from '@/features/catalog/api'
+import { useCart } from '@/features/cart/store'
 import { yuanWithSymbol } from '@/shared/lib/money'
-
-const WEEKDAY_LABEL = ['一', '二', '三', '四', '五', '六', '日']
 
 export function StallDetailPage() {
   const { stallId } = useParams<{ stallId: string }>()
@@ -70,14 +76,7 @@ export function StallDetailPage() {
           </p>
         ) : null}
 
-        <p className="mt-3 text-xs text-ink-500">
-          营业时间：
-          {stall.businessHours
-            .filter((hour) => hour.weekday === 1)
-            .map((hour) => `${hour.openTime}-${hour.closeTime}`)
-            .join(' / ') || '未设置'}
-          ｜ 预计 {stall.estimatedMinutes} 分钟出餐
-        </p>
+        <p className="mt-3 text-xs text-ink-500">预计 {stall.estimatedMinutes} 分钟出餐</p>
       </header>
 
       {stall.menuGroups.length === 0 ? (
@@ -93,23 +92,56 @@ export function StallDetailPage() {
             <ul className="mt-3 divide-y divide-ink-300/60">
               {group.dishes.map((dish) => (
                 <li key={dish.id} className="py-3">
-                  <DishRow dish={dish} />
+                  <DishRow dish={dish} stall={stall} />
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
-
-      <p className="pb-4 text-center text-xs text-ink-500">
-        加购与下单将在 M2 接入；当前只做浏览。
-      </p>
     </section>
   )
 }
 
-function DishRow({ dish }: { dish: Dish }) {
+function DishRow({ dish, stall }: { dish: Dish; stall: StallDetail }) {
+  const add = useCart((state) => state.add)
+  const [selected, setSelected] = useState<string[]>([])
   const soldOut = dish.status === 'sold_out' || dish.stock <= 0
+
+  const chosen = useMemo(
+    () =>
+      dish.optionGroups
+        .flatMap((group) => group.options)
+        .filter((option) => selected.includes(option.id)),
+    [dish.optionGroups, selected],
+  )
+
+  const unitPrice =
+    dish.priceCents + chosen.reduce((sum, option) => sum + option.priceDeltaCents, 0)
+
+  const missing = dish.optionGroups
+    .filter((group) => group.required)
+    .filter((group) => !group.options.some((option) => selected.includes(option.id)))
+
+  const toggle = (group: DishOptionGroup, option: DishOption) => {
+    if (!option.isAvailable) return
+    setSelected((current) => {
+      const inGroup = group.options
+        .filter((item) => current.includes(item.id))
+        .map((item) => item.id)
+
+      if (current.includes(option.id)) {
+        return current.filter((id) => id !== option.id)
+      }
+      if (group.maxSelect === 1) {
+        return [...current.filter((id) => !inGroup.includes(id)), option.id]
+      }
+      if (inGroup.length >= group.maxSelect) {
+        return current
+      }
+      return [...current, option.id]
+    })
+  }
 
   return (
     <div className={soldOut ? 'opacity-55' : ''}>
@@ -126,16 +158,67 @@ function DishRow({ dish }: { dish: Dish }) {
           {dish.description ? (
             <p className="mt-0.5 text-xs text-ink-500">{dish.description}</p>
           ) : null}
-          {dish.optionGroups.length > 0 ? (
-            <p className="mt-1 text-xs text-ink-500">
-              {dish.optionGroups.map((group: DishOptionGroup) => group.name).join(' · ')}
-            </p>
-          ) : null}
         </div>
-        <span className="shrink-0 text-sm font-medium text-brand-600">
-          {yuanWithSymbol(dish.priceCents)}
-        </span>
+
+        <div className="shrink-0 text-right">
+          <p className="text-sm font-medium text-brand-600">{yuanWithSymbol(unitPrice)}</p>
+          <button
+            type="button"
+            disabled={soldOut || missing.length > 0}
+            onClick={() =>
+              add(
+                {
+                  dishId: dish.id,
+                  name: dish.name,
+                  unitPriceCents: unitPrice,
+                  optionIds: chosen.map((option) => option.id),
+                  optionNames: chosen.map((option) => option.name),
+                },
+                { id: stall.id, name: stall.name, minOrderCents: stall.minOrderCents },
+              )
+            }
+            className="mt-1 rounded-pill bg-brand-500 px-3 py-1 text-xs font-medium text-white hover:bg-brand-600 disabled:opacity-40"
+          >
+            加入
+          </button>
+        </div>
       </div>
+
+      {dish.optionGroups.length > 0 && !soldOut ? (
+        <div className="mt-2 space-y-1.5">
+          {dish.optionGroups.map((group) => (
+            <div key={group.id} className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs text-ink-500">
+                {group.name}
+                {group.required ? ' *' : ''}
+              </span>
+              {group.options.map((option) => {
+                const active = selected.includes(option.id)
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => toggle(group, option)}
+                    disabled={!option.isAvailable}
+                    className={[
+                      'rounded-pill border px-2 py-0.5 text-xs',
+                      active
+                        ? 'border-brand-500 bg-brand-50 text-brand-600'
+                        : 'border-ink-300 text-ink-700',
+                      option.isAvailable ? '' : 'opacity-40',
+                    ].join(' ')}
+                  >
+                    {option.name}
+                    {option.priceDeltaCents > 0
+                      ? ` +${yuanWithSymbol(option.priceDeltaCents)}`
+                      : ''}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -148,6 +231,3 @@ function Stat({ label, value }: { label: string; value: string }) {
     </div>
   )
 }
-
-/** 保留给 M2 显示规格：目前只在详情页列出组名，不渲染选项按钮。 */
-export { WEEKDAY_LABEL }

@@ -9,6 +9,7 @@ export type Dish = components['schemas']['DishOut']
 export type MenuGroup = components['schemas']['MenuGroupOut']
 export type PageMeta = components['schemas']['PageMeta']
 export type DishOptionGroup = components['schemas']['DishOptionGroupOut']
+export type DishOption = components['schemas']['DishOptionOut']
 
 export type StallSort = 'recommended' | 'sales' | 'rating' | 'min_order'
 

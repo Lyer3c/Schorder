@@ -2,7 +2,7 @@
 
 学生 / 商家 / 管理三端的校园点餐系统。前端 React + TypeScript，后端 FastAPI + SQLAlchemy + SQLite。
 
-> 当前进度：**M1 已完成**（数据表、种子数据、目录接口、档口浏览页）。
+> 当前进度：**M2 已完成**（认证会话、下单、模拟支付）。
 > 设计与决策见 [`docs/architecture.md`](docs/architecture.md)、[`docs/security.md`](docs/security.md)、[`docs/api-contract.md`](docs/api-contract.md)。
 
 ---
@@ -104,7 +104,7 @@ Pydantic 模型 → FastAPI → openapi.json → openapi-typescript → types.ts
 - `types.ts` 与 `openapi.json` 都入库，PR 里能直接看到接口变化。
 - 前端禁止手写接口类型；`npm run verify` 会重生成并检查漂移。
 
-## 6. 已实现（M0 + M1）
+## 6. 已实现（M0 + M1 + M2）
 
 **M0 骨架**
 
@@ -125,12 +125,21 @@ Pydantic 模型 → FastAPI → openapi.json → openapi-typescript → types.ts
 - [x] 前端：首页分类与推荐、档口列表（URL 同步筛选）、档口详情（菜单分组 / 售罄 / 规格组）
 - [x] 26 条后端测试、ruff、mypy strict 全绿
 
+**M2 认证与下单**
+
+- [x] 服务端不透明会话：`__Host-sid` Cookie（HttpOnly / SameSite=Lax）、令牌只存 SHA-256、空闲 30 分钟 + 绝对 12 小时
+- [x] 注册 / 登录 / 会话 / 登出 / 改密；登录失败 5 次锁定 15 分钟，账号不存在也走等价哈希
+- [x] CSRF 双闸：`Origin` 白名单中间件 + `X-CSRF-Token` 依赖（写操作全覆盖）
+- [x] 下单链路：`/orders/preview` 试算 → `/orders` 建单（条件扣库存 + 唯一幂等键）→ `/orders/{id}/pay` 模拟支付（CAS 状态迁移）
+- [x] 前端：登录/注册页、加购（规格必选校验）、购物车、结算、订单列表与详情
+- [x] 56 条后端测试、ruff、mypy strict 全绿
+
 ## 7. 本机环境的两个特殊说明
 
 1. **`apps/api/pip.ini`**：指向清华源，并关闭 HTTP 缓存。直连 PyPI 索引在本机会卡死；缓存目录在用户目录下不可写，开启缓存会让 pip 卡在写盘重试。
 2. **`.pyshim/sitecustomize.py`**：本机沙箱不允许访问 `0700` 权限的目录，而 `tempfile.mkdtemp`、pytest 的临时目录都用 0700。该垫片把 0700 放宽为 0777。**生产环境不要带上这个目录**，`dev.ps1` / `verify.ps1` 只通过 `PYTHONPATH` 引用它。
 
-## 8. 下一步（M2）
+## 8. 下一步（M3）
 
 购物车、结算、下单（服务端重算价格 / 条件扣库存 / 幂等键）、模拟支付，以及登录与会话
 （`users`、`sessions` 两张表已经建好，M2 接上鉴权与 CSRF）。

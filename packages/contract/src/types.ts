@@ -4,6 +4,91 @@
  */
 
 export interface paths {
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 登录 */
+        post: operations["login_api_v1_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 登出 */
+        post: operations["logout_api_v1_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 修改密码 */
+        post: operations["change_password_api_v1_auth_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 注册 */
+        post: operations["register_api_v1_auth_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 当前会话 */
+        get: operations["read_session_api_v1_auth_session_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/categories": {
         parameters: {
             query?: never;
@@ -32,6 +117,75 @@ export interface paths {
         get: operations["read_meta_api_v1_meta_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 我的订单 */
+        get: operations["list_orders_api_v1_orders_get"];
+        put?: never;
+        /** 创建订单 */
+        post: operations["create_order_api_v1_orders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 下单前试算 */
+        post: operations["preview_api_v1_orders_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/{order_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 订单详情 */
+        get: operations["get_order_api_v1_orders__order_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/{order_id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 模拟支付 */
+        post: operations["pay_order_api_v1_orders__order_id__pay_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -93,6 +247,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AmountOut */
+        AmountOut: {
+            /** Deliveryfeecents */
+            deliveryFeeCents: number;
+            /** Discountcents */
+            discountCents: number;
+            /** Itemsamountcents */
+            itemsAmountCents: number;
+            /** Packingfeecents */
+            packingFeeCents: number;
+            /** Payablecents */
+            payableCents: number;
+        };
         /** BusinessHourOut */
         BusinessHourOut: {
             /** Closetime */
@@ -123,6 +290,41 @@ export interface components {
             name: string;
             /** Sortorder */
             sortOrder: number;
+        };
+        /** ChangePasswordIn */
+        ChangePasswordIn: {
+            /** Newpassword */
+            newPassword: string;
+            /** Oldpassword */
+            oldPassword: string;
+        };
+        /** CreateOrderIn */
+        CreateOrderIn: {
+            /** Addressid */
+            addressId?: string | null;
+            /** Contactname */
+            contactName: string;
+            /** Contactphone */
+            contactPhone: string;
+            /**
+             * Fulfillmenttype
+             * @default pickup
+             * @enum {string}
+             */
+            fulfillmentType: "pickup" | "delivery";
+            /** Idempotencykey */
+            idempotencyKey: string;
+            /** Items */
+            items: components["schemas"]["OrderItemIn"][];
+            /** Remark */
+            remark?: string | null;
+            /** Stallid */
+            stallId: string;
+            /**
+             * Tablewarecount
+             * @default 0
+             */
+            tablewareCount: number;
         };
         /** DishOptionGroupOut */
         DishOptionGroupOut: {
@@ -176,6 +378,13 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** LoginIn */
+        LoginIn: {
+            /** Password */
+            password: string;
+            /** Phone */
+            phone: string;
+        };
         /** MenuGroupOut */
         MenuGroupOut: {
             /** Dishes */
@@ -209,12 +418,182 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** OkData */
+        OkData: {
+            /**
+             * Success
+             * @default true
+             */
+            success: boolean;
+        };
+        /** OkEnvelope */
+        OkEnvelope: {
+            data: components["schemas"]["OkData"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** OrderEnvelope */
+        OrderEnvelope: {
+            data: components["schemas"]["OrderOut"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** OrderItemIn */
+        OrderItemIn: {
+            /** Dishid */
+            dishId: string;
+            /** Optionids */
+            optionIds?: string[];
+            /** Quantity */
+            quantity: number;
+        };
+        /** OrderItemOut */
+        OrderItemOut: {
+            /** Dishid */
+            dishId: string;
+            /** Dishname */
+            dishName: string;
+            /** Lineamountcents */
+            lineAmountCents: number;
+            /** Options */
+            options: components["schemas"]["OrderOptionOut"][];
+            /** Optionsamountcents */
+            optionsAmountCents: number;
+            /** Quantity */
+            quantity: number;
+            /** Unitpricecents */
+            unitPriceCents: number;
+        };
+        /** OrderListOut */
+        OrderListOut: {
+            /** Data */
+            data: components["schemas"]["OrderOut"][];
+            meta: components["schemas"]["PageMeta"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** OrderOptionOut */
+        OrderOptionOut: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Pricedeltacents */
+            priceDeltaCents: number;
+        };
+        /** OrderOut */
+        OrderOut: {
+            amount: components["schemas"]["AmountOut"];
+            /** Cancancel */
+            canCancel: boolean;
+            /** Canpay */
+            canPay: boolean;
+            /** Contactname */
+            contactName: string;
+            /** Contactphone */
+            contactPhone: string;
+            /** Createdat */
+            createdAt: string;
+            /** Expiresat */
+            expiresAt: string;
+            /** Fulfillmenttype */
+            fulfillmentType: string;
+            /** Id */
+            id: string;
+            /** Items */
+            items: components["schemas"]["OrderItemOut"][];
+            /** Orderno */
+            orderNo: string;
+            /** Paidat */
+            paidAt?: string | null;
+            /** Remark */
+            remark?: string | null;
+            /** Stallid */
+            stallId: string;
+            /** Stallname */
+            stallName: string;
+            /** Status */
+            status: string;
+            /** Tablewarecount */
+            tablewareCount: number;
+        };
         /** PageMeta */
         PageMeta: {
             /** Nextcursor */
             nextCursor?: string | null;
             /** Total */
             total?: number | null;
+        };
+        /** PreviewEnvelope */
+        PreviewEnvelope: {
+            data: components["schemas"]["PreviewOut"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
+        };
+        /** PreviewOrderIn */
+        PreviewOrderIn: {
+            /** Addressid */
+            addressId?: string | null;
+            /**
+             * Fulfillmenttype
+             * @default pickup
+             * @enum {string}
+             */
+            fulfillmentType: "pickup" | "delivery";
+            /** Items */
+            items: components["schemas"]["OrderItemIn"][];
+            /** Stallid */
+            stallId: string;
+            /**
+             * Tablewarecount
+             * @default 0
+             */
+            tablewareCount: number;
+        };
+        /** PreviewOut */
+        PreviewOut: {
+            amount: components["schemas"]["AmountOut"];
+            /** Estimatedminutes */
+            estimatedMinutes: number;
+            /** Fulfillmenttype */
+            fulfillmentType: string;
+            /** Items */
+            items: components["schemas"]["OrderItemOut"][];
+            /** Minordercents */
+            minOrderCents: number;
+            /** Minorderok */
+            minOrderOk: boolean;
+            /** Stallid */
+            stallId: string;
+            /** Stallname */
+            stallName: string;
+            /** Warnings */
+            warnings: string[];
+        };
+        /** RegisterIn */
+        RegisterIn: {
+            /** Nickname */
+            nickname: string;
+            /** Password */
+            password: string;
+            /** Phone */
+            phone: string;
         };
         /** SearchEnvelope */
         SearchEnvelope: {
@@ -232,6 +611,22 @@ export interface components {
             dishes: components["schemas"]["DishOut"][];
             /** Stalls */
             stalls: components["schemas"]["StallSummaryOut"][];
+        };
+        /** SessionDataOut */
+        SessionDataOut: {
+            /** Csrftoken */
+            csrfToken: string;
+            user: components["schemas"]["UserOut"];
+        };
+        /** SessionEnvelope */
+        SessionEnvelope: {
+            data: components["schemas"]["SessionDataOut"];
+            /**
+             * Ok
+             * @default true
+             * @constant
+             */
+            ok: true;
         };
         /** StallDetailEnvelope */
         StallDetailEnvelope: {
@@ -327,6 +722,19 @@ export interface components {
             /** Ratingcount */
             ratingCount: number;
         };
+        /** UserOut */
+        UserOut: {
+            /** Avatarurl */
+            avatarUrl?: string | null;
+            /** Id */
+            id: string;
+            /** Nickname */
+            nickname: string;
+            /** Phone */
+            phone: string;
+            /** Role */
+            role: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -349,6 +757,145 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    login_api_v1_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_api_v1_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkEnvelope"];
+                };
+            };
+        };
+    };
+    change_password_api_v1_auth_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_api_v1_auth_register_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_session_api_v1_auth_session_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionEnvelope"];
+                };
+            };
+        };
+    };
     list_categories_api_v1_categories_get: {
         parameters: {
             query?: never;
@@ -385,6 +932,167 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MetaEnvelope"];
+                };
+            };
+        };
+    };
+    list_orders_api_v1_orders_get: {
+        parameters: {
+            query?: {
+                status?: ("pending_payment" | "paid" | "accepted" | "preparing" | "ready" | "delivering" | "completed" | "cancelled") | null;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_order_api_v1_orders_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_v1_orders_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreviewOrderIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_order_api_v1_orders__order_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pay_order_api_v1_orders__order_id__pay_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
